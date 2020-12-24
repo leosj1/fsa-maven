@@ -240,6 +240,16 @@
 					<input type="checkbox" id="chkNodeRadius" name="chkNodeRadius">
 					Node Size Proportional to Degree
 				</div>
+				<div>
+					<input type="radio" id="networkViewAll" name="networkView"
+						value="all" checked> <label for="networkViewAll">All
+						Nodes</label>
+				</div>
+				<div>
+					<input type="radio" id="networkViewFSAOnly" name="networkView"
+						value="fsaOnly"> <label for="networkViewFSAOnly">FSA
+						Groups Only</label>
+				</div>
 
 				<!--<div id="divDirectedNetwork" class="visItem">
             <input type="checkbox" id="chkDirectedNetwork"
