@@ -52,7 +52,7 @@
 			<div id="loginHeader" class="container">
 				<div id="loginImage" class="header">
 					<img alt="Merjek Logo"
-						src="${pageContext.request.contextPath}/images/mercek_8_2.jpg">
+						src="images/mercek_8_2.jpg">
 				</div>
 				<div id="loginTitle" class="header">
 					<h1>Welcome to FSA</h1>

@@ -27,6 +27,8 @@ import myclasses.NetworkGraph;
 //import org.json.simple.JSONObject;
 import org.json.JSONObject;
 
+import authentication.DbConnection;
+
 /**
  * Servlet implementation class LoadGraphServlet
  */
@@ -38,8 +40,8 @@ public class LoadGraphServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 	// Registered with Tomcat in web.xml & context.xml
-    @Resource(name="jdbc/fsa")
-    private DataSource ds;
+//    @Resource(name="jdbc/fsa")
+//    private DataSource ds;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse
@@ -50,6 +52,7 @@ public class LoadGraphServlet extends HttpServlet {
         NetworkDAO networkDAO = new NetworkDAO();
 
         // Load graph from MySQL DB connection
+        DbConnection ds = new DbConnection();
         try (Connection connection = ds.getConnection();) {
             
             String networkIdString = request.getParameter("networkId");

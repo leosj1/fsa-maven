@@ -22,7 +22,7 @@ if(email != null){
 
 <!-- CSS -->
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/login.css" />
+	href="css/login.css" />
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Catamaran:800"
@@ -33,7 +33,7 @@ if(email != null){
 <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.js"></script>
 <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
 <script src="page_dependencies/baseurl.js?v=908"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/login_validation.js?v=907"></script>
+<script type="text/javascript" src="js/login_validation.js?v=907"></script>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
 
 </head>
@@ -44,7 +44,7 @@ if(email != null){
 			<div id="loginHeader" class="container">
 				<div id="loginImage" class="header">
 					<img alt="Merjek Logo"
-						src="${pageContext.request.contextPath}/images/mercek_8_2.jpg">
+						src="images/mercek_8_2.jpg">
 				</div>
 				<div id="loginTitle" class="header">
 					<h1>Focal Structure Visualization</h1>

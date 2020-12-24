@@ -75,7 +75,7 @@
         <div class="nav">
             <ul>
               <%-- FIXME This logout mechanism is bad --%>
-              <li>Welcome, ${pageContext.request.userPrincipal.name}</li>
+              <%-- <li>Welcome, ${pageContext.request.userPrincipal.name}</li> --%>
               <li> 
                 <form name="logout" action="logout" method="post">
                   <button>Logout</button> 
@@ -182,7 +182,7 @@
         </div>
         
         <!--Upload CSV to server  -->
-        <c:if test="${pageContext.request.isUserInRole('auth')}">
+        <%-- <c:if test="${pageContext.request.isUserInRole('auth')}">
         
           <div class="formBox">
             <h2>Upload CSV</h2>
@@ -196,7 +196,7 @@
               <input id="uploadSubmit" type="submit" value="Upload CSV" />
             </form>
           </div>
-        </c:if>
+        </c:if> --%>
         
         
       </div><!-- menu -->
@@ -209,8 +209,8 @@
     </div>
     <!-- Custom JS -->
     <script src="js/fsa_main.js" charset="utf-8"></script>
-    <c:if test="${pageContext.request.isUserInRole('auth')}">
+    <%-- <c:if test="${pageContext.request.isUserInRole('auth')}">
       <script src="js/upload_csv.js" charset="utf-8"></script>
-    </c:if>
+    </c:if> --%>
   </body>
 </html>

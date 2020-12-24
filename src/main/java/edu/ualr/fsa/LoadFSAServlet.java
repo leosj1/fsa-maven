@@ -23,6 +23,8 @@ import myclasses.NetworkLoader;
 import myclasses.FocalStructures;
 import org.json.JSONObject;
 
+import authentication.DbConnection;
+
 
 /**
  * Servlet implementation class LoadFSAServlet
@@ -33,8 +35,8 @@ public class LoadFSAServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Registered with Tomcat in web.xml & context.xml
-    @Resource(name="jdbc/fsa")
-    private DataSource ds;
+//    @Resource(name="jdbc/fsa")
+//    private DataSource ds;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -55,6 +57,7 @@ public class LoadFSAServlet extends HttpServlet {
         // TODO instantiate in doGet or as init()? - see FSAServlet.java 
 //        NetworkDAO networkDAO = new NetworkDAO(ds);
         NetworkDAO networkDAO = new NetworkDAO();
+        DbConnection ds = new DbConnection();
 
         try (Connection connection = ds.getConnection();) {
             
