@@ -8,8 +8,8 @@
     License: MIT
 --%>
 <%
-Object email = (null == session.getAttribute("email")) ? "" : session.getAttribute("email");
-if(email != null){
+	Object email = (null == session.getAttribute("email")) ? "" : session.getAttribute("email");
+if (email != null) {
 	//response.sendRedirect("index.jsp");
 }
 %>
@@ -21,8 +21,7 @@ if(email != null){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- CSS -->
-<link rel="stylesheet"
-	href="css/login.css" />
+<link rel="stylesheet" href="css/login.css" />
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Catamaran:800"
@@ -30,12 +29,23 @@ if(email != null){
 <script src="https://code.jquery.com/jquery-3.5.1.js"
 	integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
 	crossorigin="anonymous"></script>
-<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.js"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+<!-- <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.js"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.js"
+	integrity="sha512-JjYSgzqo9K0IeYGEslMRYE8aO9tq7Ky3EQNmEVkAe6Cp14AwlJMLMnb0fpgEkr3YxJ8ghQiriOvZwIdRZieGIQ=="
+	crossorigin="anonymous"></script>
+<!-- <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.min.js"
+	integrity="sha512-DaXizW7rneJiM/XOnTQVQ7wDZBVNXf5U9rE88BPYhQcEQ4pjaEZlCX5hgY3+4C3K91jfdpUWbz8t8mL/g1BDTw=="
+	crossorigin="anonymous"></script>
 <script src="page_dependencies/baseurl.js?v=908"></script>
 <script type="text/javascript" src="js/login_validation.js?v=907"></script>
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
-
+<!-- <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script> -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"
+	integrity="sha512-TGP4l8JruobzdKs4gMpTvhshQepDREekFl4QKd9b/bwALzzZxoAu9cJacP6m8h924i2pPDya5an4tfZmOLjWUQ=="
+	crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -43,8 +53,7 @@ if(email != null){
 		<div id="loginContainer" class="container">
 			<div id="loginHeader" class="container">
 				<div id="loginImage" class="header">
-					<img alt="Merjek Logo"
-						src="images/mercek_8_2.jpg">
+					<img alt="Merjek Logo" src="images/mercek_8_2.jpg">
 				</div>
 				<div id="loginTitle" class="header">
 					<h1>Focal Structure Visualization</h1>
@@ -106,41 +115,41 @@ if(email != null){
 	</div>
 
 	<script type="text/javascript">
-    /* $('#loggin').on("click", function(e) {
-    	email = $('.user_name').val()
-    	username = ""
-    	password = $('.pass_word').val()
-    	name = ""
-    	pic = ""
-    	register(email, username, password, pic);
-	});
-    function register(username, name, password, pic) {
-		$("#loggin")
-				.html(
-						'<button type="button" class="btn btn-primary loginformbutton" style="background: #28a745;">Logging in ...</button>');
-
-		$.ajax({
-			url : 'register',
-			method : 'POST',
-			//dataType: 'json',
-			data : {
-				email : email,
-				name : name,
-				profile_picture : pic,
-				password : "",
-				register : "yes",
-				signin : "yes",
-			},
-			error : function(response) {
-				alert('error')
-			},
-			success : function(response) {
-				toastr.success('Login successfull!', 'Success');
-				window.location.href = baseurl + "dashboard.jsp";
-			}
+		/* $('#loggin').on("click", function(e) {
+			email = $('.user_name').val()
+			username = ""
+			password = $('.pass_word').val()
+			name = ""
+			pic = ""
+			register(email, username, password, pic);
 		});
-	} */
-    </script>
+		function register(username, name, password, pic) {
+			$("#loggin")
+					.html(
+							'<button type="button" class="btn btn-primary loginformbutton" style="background: #28a745;">Logging in ...</button>');
+
+			$.ajax({
+				url : 'register',
+				method : 'POST',
+				//dataType: 'json',
+				data : {
+					email : email,
+					name : name,
+					profile_picture : pic,
+					password : "",
+					register : "yes",
+					signin : "yes",
+				},
+				error : function(response) {
+					alert('error')
+				},
+				success : function(response) {
+					toastr.success('Login successfull!', 'Success');
+					window.location.href = baseurl + "dashboard.jsp";
+				}
+			});
+		} */
+	</script>
 </body>
 
 </html>
