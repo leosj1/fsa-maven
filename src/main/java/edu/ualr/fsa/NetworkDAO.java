@@ -13,10 +13,11 @@ import java.sql.SQLException;
 import authentication.DbConnection;
 
 import com.opencsv.*;
-import com.opencsv.exceptions.CsvException;
+
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -36,15 +37,15 @@ public class NetworkDAO {
 
 	// Accesses all Networks in MySQL database configured as JNDI resource and
 	// converts to List<String>
-	public Hashtable<Integer, String> getNetworks(String owner) throws SQLException {
+	public LinkedHashMap<Integer, String> getNetworks(String owner) throws SQLException {
 		// List of all network names
 		List<String> labels = new ArrayList<String>();
-		Hashtable<Integer, String> networkHash = new Hashtable<Integer, String>();
+		LinkedHashMap<Integer, String> networkHash = new LinkedHashMap<Integer, String>();
 
 		try (Connection connection = ds.getConnection();
 				PreparedStatement networkStmt = connection
 						.prepareStatement("SELECT network_id " + "     , network_label " + "  FROM network "
-								+ " WHERE owner_id = ? " + "    OR owner_id = \'demo\' "); // FIXME Properties file to
+								+ " WHERE owner_id = ? " + "    OR owner_id = \'demo\' ORDER BY network_id DESC"); // FIXME Properties file to
 																							// avoid hardcoding 'demo'
 		) {
 			networkStmt.setString(1, owner);
@@ -324,7 +325,7 @@ public class NetworkDAO {
 			List<String[]> allRows = new ArrayList<>();
 			try {
 				allRows = csvReader.readAll();
-			} catch (CsvException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

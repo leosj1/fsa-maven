@@ -1,6 +1,18 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%@page import="myclasses.NetworkLoader"%>
+<%@page import="util.*"%>
+<%@page import="authentication.*"%>
+<%@ page import="java.io.*"%>
+<%@page import="java.util.*"%>
+<%@ page import="myclasses.NetworkGraph"%>
+<%@ page import="myclasses.NetworkLoader"%>
+<%@ page import="myclasses.FocalStructures"%>
+<%@ page import="edu.ualr.fsa.*"%>
+<%@ page import="org.json.simple.JSONObject"%>
+<%@ page import="org.json.simple.parser.JSONParser"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%--
     Author: Fatih Şen
@@ -59,6 +71,24 @@
   </head>
 
   <body>
+  <%
+     Object email = (null == session.getAttribute("email")) ? "" : session.getAttribute("email");
+     DbConnection dbconn = new DbConnection();
+     NetworkDAO networkDAO = new NetworkDAO();
+     List<ArrayList<String>> userinfo = dbconn.query("SELECT * FROM usercredentials where Email = '"+email+"'");
+     String username = "";
+     LinkedHashMap<Integer, String> networkIds = new LinkedHashMap<>();
+     if (userinfo.size()<1) {
+     	response.sendRedirect("login.jsp");
+     }
+     else{
+    	 System.out.println("");
+    	 username = userinfo.get(0).get(0);
+    	 networkIds = networkDAO.getNetworks(username);
+    	 //networkIds = (Hashtable<Integer, String>)session.getAttribute("networkIds");
+     }
+     
+    %>
 
     <%-- Logo, Title, and links --%>
     <div class="headerContainer">
@@ -73,16 +103,22 @@
         </div>
 
         <div class="nav">
-            <ul>
-              <%-- FIXME This logout mechanism is bad --%>
-              <%-- <li>Welcome, ${pageContext.request.userPrincipal.name}</li> --%>
-              <li> 
-                <form name="logout" action="logout" method="post">
-                  <button>Logout</button> 
-                </form>
-              </li>
-            </ul>
-        </div>
+				<ul>
+					<%-- FIXME This logout mechanism is bad --%>
+					<li>Welcome, <%=username %></li>
+					<li>
+						<%if (userinfo.size()<1) { %>
+						<form name="login" action="" method="post">
+							<button href="login.jsp">Login</button>
+							<%}else{ %>
+							<form name="logout" action="logout" method="post">
+								<button>Logout</button>
+							</form>
+							<%} %>
+						</form>
+					</li>
+				</ul>
+			</div>
 
       </div>
     </div>
@@ -151,9 +187,17 @@
             <%-- MySQL Query --%>
             <select id="networkList" name="networkList">
               <!-- <option value="placeholder" selected="true">Select a network</option>-->
-              <c:forEach items="${networkIds.keys()}" var="networkId">
+              <%-- <c:forEach items="${networkIds.keys()}" var="networkId">
                 <option value="${networkId}">${networkIds.get(networkId)}</option>
-              </c:forEach>
+              </c:forEach> --%>
+              
+              <%
+              for(Integer x: networkIds.keySet()){
+            	  request.setAttribute("networkId", x);
+            	%>
+						<option value="<%=x%>"><%= networkIds.get(x)%></option>
+						<%}
+              %>
             </select>
             <%-- TODO Retrieve & cache FSA groups--%>
             <input id="applyFSAUnweighted" class="FSAButtons" type="button" value="Apply FSA Unweighted" />
@@ -172,9 +216,9 @@
           <form id="networkViewForm">
             <h2>Network View</h2>
             <div>
-              <input type="radio" id="networkViewAll" name="networkView" value="all" checked>
+              <input type="radio" id="networkViewAll" name="networkView" value="all" >
               <label for="networkViewAll">All Nodes</label>
-              <input type="radio" id="networkViewFSAOnly" name="networkView" value="fsaOnly">
+              <input type="radio" id="networkViewFSAOnly" name="networkView" value="fsaOnly" checked>
               <label for="networkViewFSAOnly">FSA Groups Only</label>
             </div>
           </form>
@@ -182,21 +226,22 @@
         </div>
         
         <!--Upload CSV to server  -->
-        <%-- <c:if test="${pageContext.request.isUserInRole('auth')}">
+        <%-- <c:if test="${pageContext.request.isUserInRole('auth')}"> --%>
         
           <div class="formBox">
             <h2>Upload CSV</h2>
             <p id="csvFormatIcon" style="margin:0; cursor: pointer;">&#9432; CSV Format Info</p>
             <form id="uploadForm" method="post" action="upload-csv" enctype="multipart/form-data">
               <label id="uploadFormLabel" for="uploadForm"></label>
+              <input name="ownerName" type="hidden" value="<%=username%>" />
               <input name="networkName" type="text" maxlength="30" placeholder="Name your Network" required />
               <input id="filePicker" name="userCSV" type="file" accept="text/csv" required />
               <label for="uploadProgress" id="uploadProgressLabel"></label>
               <progress id="uploadProgress" value=0 max=1></progress>
-              <input id="uploadSubmit" type="submit" value="Upload CSV" />
+              <input id="uploadSubmit" type="submit" value="Upload CSV"/>
             </form>
           </div>
-        </c:if> --%>
+       <%-- </c:if> --%>
         
         
       </div><!-- menu -->
@@ -209,6 +254,7 @@
     </div>
     <!-- Custom JS -->
     <script src="js/fsa_main.js" charset="utf-8"></script>
+    <script src="js/upload_csv.js" charset="utf-8"></script>
     <%-- <c:if test="${pageContext.request.isUserInRole('auth')}">
       <script src="js/upload_csv.js" charset="utf-8"></script>
     </c:if> --%>

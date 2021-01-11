@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import javax.sql.DataSource;
 import javax.annotation.Resource;
@@ -43,7 +44,7 @@ public class FSAServlet extends HttpServlet {
 				
 				NetworkDAO networkDAO = new NetworkDAO();
 				
-				Hashtable<Integer, String> networkHash = networkDAO.getNetworks(owner);
+				LinkedHashMap<Integer, String> networkHash = networkDAO.getNetworks(owner);
 				request.setAttribute("networkIds", networkHash);
 				session.setAttribute("networkIds", networkHash);
 				PrintWriter pww = response.getWriter();

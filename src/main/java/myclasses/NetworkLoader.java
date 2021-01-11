@@ -13,7 +13,7 @@ import java.util.Map;
 
 //import au.com.bytecode.opencsv.CSVReader;
 import com.opencsv.*;
-import com.opencsv.exceptions.CsvValidationException;
+//import com.opencsv.exceptions.CsvValidationException;
 
 import java.util.Iterator;
 //import com.opencsv.CSVReader;
@@ -209,7 +209,8 @@ public class NetworkLoader {
                     // if(!edgeList.contains(strEdge))
                     // edgeList.add(strEdge);
                 }
-            } catch (CsvValidationException e) {
+//            } catch (CsvValidationException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

@@ -90,7 +90,7 @@
      NetworkDAO networkDAO = new NetworkDAO();
      List<ArrayList<String>> userinfo = dbconn.query("SELECT * FROM usercredentials where Email = '"+email+"'");
      String username = "";
-     Hashtable<Integer, String> networkIds = new Hashtable<>();
+     LinkedHashMap<Integer, String> networkIds = new LinkedHashMap<>();
      if (userinfo.size()<1) {
      	response.sendRedirect("login.jsp");
      }

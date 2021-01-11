@@ -289,6 +289,7 @@ $(document).ready(function() {
         .attr("dx", -5) // Slight offset to be in center
         .attr("dy", 5)  // FIXME Make this appear better
         .attr("visibility", "hidden")
+        .on("mouseover", function (d) { return d.name })
         .text(function(d) { return d.name })
         // FIXME node labels scaled by zoom?
         .call(drag);
@@ -304,6 +305,8 @@ $(document).ready(function() {
         .attr("dy", 5)  // FIXME Make this appear better
         .attr("visibility", "hidden")
         .text(function(d) { return d.value });
+   
+    
 
     // d3.forceSimulation() creates simulation entities which will be
     // used to manipulate the position of the DOM entities on each tick

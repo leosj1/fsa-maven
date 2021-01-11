@@ -119,7 +119,8 @@ public class UploadCSVServlet extends HttpServlet {
             // TODO write to server log
             response.getWriter().write(fileSize.toString() + " Bytes" + " | " +
                                        lineCount + " lines");
-            response.sendRedirect("index.jsp");
+//            response.sendRedirect("index.jsp");
+            response.sendRedirect("fsa_index.jsp");
 
 
         } catch (SQLException e) {

@@ -4,7 +4,7 @@
  */
 
 $(document).ready(function() {
-    alert('csv_loader')
+   /* alert('csv_loader')*/
     // FIXME Include proper user guidance for CSV format
     var csvFormatIcon = document.getElementById("csvFormatIcon");
     
@@ -164,9 +164,9 @@ $(document).ready(function() {
         var type = csvFile.type;
         var size = csvFile.size;
         var lastModified = csvFile.lastModified;
-        
+        alert(type)
         // Validate File Size
-        if (size > 100000) {  // 100 kB
+        if (size > 1000000) {  // 100 kB
             alert("We are unable to process files " +
                   "larger than 100 kB at this time.\n" +
                   "We apologize for the inconvenience.");
@@ -176,7 +176,7 @@ $(document).ready(function() {
         }
         
         // Validate MIME Type
-        else if (type != "text/csv") {  // CSV file only
+        else if (type != "text/csv" && type != "application/vnd.ms-excel") {  // CSV file only
             alert("We only accept CSV files at this time.\n" +
                   "We apologize for the inconvenience.");
             

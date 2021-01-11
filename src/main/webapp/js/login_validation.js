@@ -121,9 +121,9 @@ $(function() {
 						// set a cookie for logged in user
 						
 						Cookies.set('loggedinstatus', true , {path : '/'});
-						window.location.href = baseurl+"index.jsp";
+						window.location.href = baseurl+"fsa_index.jsp";
 					}else if(login_status == "confirmed"){
-						window.location.href = baseurl+"index.jsp";
+						window.location.href = baseurl+"fsa_index.jsp";
 					}
 					return false;
 				}
