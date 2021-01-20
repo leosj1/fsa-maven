@@ -216,9 +216,9 @@
           <form id="networkViewForm">
             <h2>Network View</h2>
             <div>
-              <input type="radio" id="networkViewAll" name="networkView" value="all" >
+              <input type="radio" id="networkViewAll" name="networkView" class="network_click"  value="all" >
               <label for="networkViewAll">All Nodes</label>
-              <input type="radio" id="networkViewFSAOnly" name="networkView" value="fsaOnly" checked>
+              <input type="radio" id="networkViewFSAOnly" class="network_click" name="networkView" value="fsaOnly" checked>
               <label for="networkViewFSAOnly">FSA Groups Only</label>
             </div>
           </form>

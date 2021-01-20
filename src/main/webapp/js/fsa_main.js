@@ -61,6 +61,10 @@ $(document).ready(function() {
   $("#networkList").change(function() {
       loadNetworkAjax("load/fsa/unweighted");
   });
+  
+  $(".network_click").click(function() {
+      loadNetworkAjax("load/fsa/unweighted");
+  });
 
   $("#applyFSAUnweighted").click(function() {
       loadNetworkAjax("load/fsa/unweighted");
