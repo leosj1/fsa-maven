@@ -200,9 +200,14 @@
               %>
             </select>
             <%-- TODO Retrieve & cache FSA groups--%>
-            <input id="applyFSAUnweighted" class="FSAButtons" type="button" value="Apply FSA Unweighted" />
+            <input  id="applyFSAUnweighted" class="FSAButtons" type="button" value="Apply FSA Unweighted" />
             <input id="applyFSAWeighted" class="FSAButtons" type="button" value="Apply FSA Weighted" />
+            <br><input  id="applyFSA2" class="FSAButtons" type="button" value="Apply FSA 2.0" />
+            <!-- onclick="move()" -->
           </form>
+					<div id="myProgress">
+						<div id="myBar" style="width:10%; height:20px; background-color: #4CAF50; text-align: center; line-height: 20px; color: white;">0%</div>
+					</div>
           
           <%-- Graph Info --%>
           <h2>Network Data</h2>
@@ -258,5 +263,8 @@
     <%-- <c:if test="${pageContext.request.isUserInRole('auth')}">
       <script src="js/upload_csv.js" charset="utf-8"></script>
     </c:if> --%>
+    <script type="text/javascript">
+
+</script>
   </body>
 </html>

@@ -73,6 +73,46 @@ $(document).ready(function() {
   $("#applyFSAWeighted").click(function() {
       loadNetworkAjax("load/fsa/weighted");
   });
+  
+  $("#applyFSA2").click(function() {
+	  alert('Are you sure you want to run 2.0 ?')
+      loadNetworkAjax("load/fsa/2.0");
+	  move()
+  });
+  
+  var i = 0;
+  function move() {
+    if (i == 0) {
+      i = 1;
+      var elem = document.getElementById("myBar");
+      var width = 10;
+      var id = setInterval(frame, 1000);
+      function frame() {
+        if (width >= 100) {
+      	  console.log("100", width)
+          clearInterval(id);
+          i = 0;
+        } else {
+      	  $.ajax({
+                type: "GET",
+                url: "Status",
+                /* data: {
+                  "networkId": $("#networkList").val()
+                }, */
+                /* dataType: "json", */
+                error: function(response) {console.log("error",response)},
+                success: function(response) {
+              	  width = parseInt(response);
+              	  console.log("success", width)
+                    elem.style.width = width + "%";
+                    elem.innerHTML = width + "%";
+                }
+              });
+
+        }
+      }
+    }
+  }
 
 
     /**
@@ -112,17 +152,17 @@ $(document).ready(function() {
               dataType: "json",
 
               error: function(response) {
-                console.log(response);
+                //console.log(response);
                 alert("Error Loading FSA, Please login");
               },
 
               success: function(response) {
-
+            	  //alert(url)
                 // Mutate Node FSA Groups
                 // from [0,5,10,...,N] -> [0,1,2,...,N]
-                response.nodes.forEach(function(nodeObj) {
-                    normalizeFSAGroup(nodeObj);
-                });
+//                response.nodes.forEach(function(nodeObj) {
+//                    normalizeFSAGroup(nodeObj);
+//                });
 
                 // alert("Ajax success");  // Debug
                 // $("div#d3vis").empty();
@@ -273,7 +313,7 @@ $(document).ready(function() {
         });
 
     // Draw nodes on top of links
-    console.log("data", nodeData)
+    //console.log("data", nodeData)
     var nodes = gNetworkBase.append("g")
         .attr("class", "nodes")
       .selectAll("circle")  // SVG native element: circle
@@ -514,12 +554,16 @@ $(document).ready(function() {
       var fsaNodes = fsaNetwork.nodes;
       var fsaLinks = fsaNetwork.links;
       
+      //console.log("fsaNodes", fsaNodes)
+      //console.log("fsaLinks", fsaLinks)
+      
       // Draw FSA Groups only
       renderGraph(fsaNodes, fsaLinks, colorScale);
     }
     
     function filterFSAGroups(networkJson) {
         // Deep copy of networkJson to avoid mutation
+    	//console.log('networkJson1', networkJson);
         var fsaNetworkJson = JSON.parse(JSON.stringify(networkJson));
         
         // Filter FSA Nodes
@@ -529,11 +573,15 @@ $(document).ready(function() {
         
         // List of FSA node names
         fsaNodeNameList = [];
+        
         fsaNodes.forEach(function(val) {
             fsaNodeNameList.push(val.name);
         });
         
         // Mutate JSON: key on names, rather than indices
+        //console.log('fsaNetworkJson', fsaNetworkJson);
+        //console.log('networkJson2', networkJson);
+        
         fsaNetworkJson.links.forEach(function(val) {
             val.source = fsaNetworkJson.nodes[val.source].name;
             val.target = fsaNetworkJson.nodes[val.target].name;
