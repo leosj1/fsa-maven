@@ -105,7 +105,7 @@ public class LoadFSA_2 extends HttpServlet {
             networkGraph.setNetworkGraph(networkGraph);
 
             // Create FSA Unweighted graph
-            String url = "http://144.167.35.125:5004/fsa_computation";
+            String url = "http://144.167.35.55:5004/fsa_computation";
         	String str = "{\r\n" + 
         			"    \"network_id\":"+networkIdString+"\r\n" + 
         			"}";

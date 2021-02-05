@@ -69,7 +69,7 @@ public class Status extends HttpServlet {
 	public static void main(String [] args) {
 		Status s = new Status();
 		try {
-			s._getResult("http://144.167.35.125:5004/status");
+			s._getResult("http://144.167.35.55:5004/status");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,7 +84,7 @@ public class Status extends HttpServlet {
     ServletException, IOException {
 
     	
-    		String url = "http://144.167.35.125:5004/status";
+    		String url = "http://144.167.35.55:5004/status";
     		String status = "";
     		try {
 				status = _getResult(url).toString();
