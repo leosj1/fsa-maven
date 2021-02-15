@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -39,7 +40,9 @@ public class Status extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
     
-    
+    HashMap<String, String> hm = DbConnection.loadConstant();		
+	
+	String api_url = hm.get("api_url");
 	
 	public String _getResult(String url) throws Exception {
 		new ArrayList<String>();
@@ -69,7 +72,7 @@ public class Status extends HttpServlet {
 	public static void main(String [] args) {
 		Status s = new Status();
 		try {
-			s._getResult("http://144.167.35.55:5004/status");
+			s._getResult("http://144.167.35.125:5004/status");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,9 +85,9 @@ public class Status extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws 
     ServletException, IOException {
-
+    		String networkIdString = request.getParameter("networkId");
     	
-    		String url = "http://144.167.35.55:5004/status";
+    		String url = api_url + "/status/" + networkIdString;
     		String status = "";
     		try {
 				status = _getResult(url).toString();

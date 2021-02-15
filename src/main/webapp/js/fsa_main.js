@@ -60,10 +60,12 @@ $(document).ready(function() {
 
   $("#networkList").change(function() {
       loadNetworkAjax("load/fsa/unweighted");
+	  //loadNetworkAjax("load/fsa/2.0");
   });
   
   $(".network_click").click(function() {
       loadNetworkAjax("load/fsa/unweighted");
+      //loadNetworkAjax("load/fsa/2.0");
   });
 
   $("#applyFSAUnweighted").click(function() {
@@ -77,29 +79,129 @@ $(document).ready(function() {
   $("#applyFSA2").click(function() {
 	  alert('Are you sure you want to run 2.0 ?')
       loadNetworkAjax("load/fsa/2.0");
-	  move()
+	  update_status_bar()
   });
   
-  var i = 0;
-  function move() {
+  $("#groups_fsa").click(function() {
+	  var groups_string = "";
+	  $("input:checkbox").each(function() {
+	      if ($(this).is(":checked")) {
+	    	  //console.log("checked----", $(this).attr("id"));
+	    	  groups_string+= $(this).attr("id") + ",";
+	      }else{
+	      	//console.log($(this).attr("id"));
+	      } 
+	  });
+	  //console.log("groups_string--", groups_string);
+	  $("#groups_fsa").val(groups_string);
+	  
+	  if(groups_string != ""){
+		  render_groups2("render");
+	  }
+	  
+  });
+  
+  function render_groups(action){
+  	$.ajax({
+          type: "GET",
+          url: "subpages/index_servlet.jsp",
+          data: {
+            "networkId": $("#networkList").val(),
+            "groups":$("#groups_fsa").val()
+          },  
+          error: function(response) {
+          	alert("error")
+          	//console.log(response)
+          },
+
+          success: function(response) {
+        	  if(action != "render"){
+        		  $("#groups_fsa").html(response);
+        	  }else{
+        		  console.log("successsssss", response)
+        	  }
+          	
+          }
+
+        });
+  }
+  
+  function render_groups2(action){
+	  	$.ajax({
+	          type: "GET",
+	          url: "subpages/index_servlet.jsp",
+	          data: {
+	            "networkId": $("#networkList").val(),
+	            "groups":$("#groups_fsa").val()
+	          },         
+	          dataType:"json",
+	          error: function(response) {
+	          	alert("error")
+	          	//console.log(response)
+	          },
+
+	          success: function(response) {
+	        	  if(action != "render"){
+	        		  $("#groups_fsa").html(response);
+	        	  }else{
+	        		  drawForceDirectedGraph(response, visDiv, colorScale, $("#filter_name").val());
+	        		// Info Table
+	                  var tbl = $("table#graphInfo");
+	                  tbl.empty() // Prevent repeating rows
+
+	                  var graphInfo = response.graphInfo[0];
+	                  console.log("graphInfo", graphInfo);
+	                  var keys = Object.keys(graphInfo);
+	                  // console.log(graphInfo, keys);  // Debug
+	                  $.each(graphInfo, function(key, val) {
+	                      // Only show responseMessage if has value
+	                      if (val != "") {
+	                          tbl.append(
+	                              $('<tr>').append(
+	                                  $('<th>').text(key),
+	                                  $('<td>').text(val)
+	                              )
+	                          )
+	                      }
+	                  });     
+	        	  }
+	          	
+	          }
+
+	        });
+	  }
+  
+  
+  /*
+   * Function to update status bar
+   */
+     var i = 0;
+  function update_status_bar() {
     if (i == 0) {
       i = 1;
       var elem = document.getElementById("myBar");
       var width = 10;
       var id = setInterval(frame, 1000);
+      
       function frame() {
-        if (width >= 100) {
-      	  console.log("100", width)
-          clearInterval(id);
-          i = 0;
+    	  var status_code = $("#fsa_computation").val();
+          console.log("status_code", status_code);
+        if (width >= 100 || status_code == "0") {
+        	if(status_code == "0"){
+        		alert('An error occurred while running the FSA v2.0 computaion. Please check the API log or if the API server is down');
+        	}
+      	    console.log("100", width)
+            clearInterval(id);
+            i = 0;
+            
+            
         } else {
       	  $.ajax({
                 type: "GET",
                 url: "Status",
-                /* data: {
-                  "networkId": $("#networkList").val()
-                }, */
-                /* dataType: "json", */
+                data: {
+                    "networkId": $("#networkList").val()
+                  },
                 error: function(response) {console.log("error",response)},
                 success: function(response) {
               	  width = parseInt(response);
@@ -134,6 +236,7 @@ $(document).ready(function() {
         }
     }
 
+    
     function loadNetworkAjax(url) {
 
         // Ensure user can't submit a request before the first one returns.
@@ -154,6 +257,7 @@ $(document).ready(function() {
               error: function(response) {
                 //console.log(response);
                 alert("Error Loading FSA, Please login");
+                $("#fsa_computation").val(0);
               },
 
               success: function(response) {
@@ -166,13 +270,14 @@ $(document).ready(function() {
 
                 // alert("Ajax success");  // Debug
                 // $("div#d3vis").empty();
-                drawForceDirectedGraph(response, visDiv, colorScale);
+                drawForceDirectedGraph(response, visDiv, colorScale, $("#filter_name").val());
 
                 // Info Table
                 var tbl = $("table#graphInfo");
                 tbl.empty() // Prevent repeating rows
 
                 var graphInfo = response.graphInfo[0];
+                console.log("graphInfo", graphInfo);
                 var keys = Object.keys(graphInfo);
                 // console.log(graphInfo, keys);  // Debug
                 $.each(graphInfo, function(key, val) {
@@ -222,6 +327,7 @@ $(document).ready(function() {
                   // Re-enable buttons once request returns
                   $(".FSAButtons").prop("disabled", false);
                   $("#loadingBar").hide();
+                  render_groups("");
               }
 
             });
@@ -237,20 +343,29 @@ $(document).ready(function() {
    * param: div (DOM selector string): div to draw SVG
    * param: colorScale (Array): D3 color scale to apply
    */
-  function drawForceDirectedGraph(networkJson, div, colorScale) {
-      
+  function drawForceDirectedGraph(networkJson, div, colorScale, type) {
+      //console.log("networkJson", networkJson);
       // Total Data
-      var nodeData = networkJson.nodes;
-      var linkData = networkJson.links;
+      var nodeData = null;
+      var linkData = null;
+      
+      if(type != ""){
+    	  alert('filtering nodes by group....');
+      }else{
+    	  nodeData = networkJson.nodes;
+    	  linkData = networkJson.links;
+      }
+      
       
       // Check Network View Radio Buttons
       if ($('input#networkViewFSAOnly').is(':checked')) { // Render Exploded FSA Groups
           
           // Explode FSA Groups from entire network
+    	  //alert('here')
           renderExplodedGraph(networkJson, colorScale);
       
       } else { // Render Entire Network
-      
+    	  //alert('here2')
           renderGraph(nodeData, linkData, colorScale);
       
       }
@@ -289,7 +404,8 @@ $(document).ready(function() {
         .data(linkData)
       .enter()  // TODO function() for exploded focal structures use .update()
         .append("line")
-        .attr("stroke-width", 2);
+        .attr("stroke-width", 5)
+        .style("stroke", applyFSAColor);
 
     // Drag Nodes
     var drag = d3.drag()
@@ -310,7 +426,7 @@ $(document).ready(function() {
             }
             d.fx = null;
             d.fy = null;
-        });
+        })
 
     // Draw nodes on top of links
     //console.log("data", nodeData)
@@ -320,8 +436,13 @@ $(document).ready(function() {
         .data(nodeData)
       .enter()
         .append("circle")
+        
+        .on("mouseover", function(d) { return d.name })
         .attr("r", 10)
-        .attr("fill", applyFSAColor)
+        //.attr("fill", applyFSAColor)
+        .attr("fill", "black")
+        
+        .text(function(d) { return d.name })
         .call(drag);
 
     var nodeLabels = gNetworkBase.append("g")
@@ -333,8 +454,8 @@ $(document).ready(function() {
         .attr("dx", -5) // Slight offset to be in center
         .attr("dy", 5)  // FIXME Make this appear better
         .attr("visibility", "hidden")
-        .on("mouseover", function (d) { return d.name })
         .text(function(d) { return d.name })
+        .on("mouseover", function(d) { return d.name })
         // FIXME node labels scaled by zoom?
         .call(drag);
 
@@ -354,6 +475,8 @@ $(document).ready(function() {
 
     // d3.forceSimulation() creates simulation entities which will be
     // used to manipulate the position of the DOM entities on each tick
+    //console.log("nodeData", nodeData);
+    //console.log("linkData", linkData);
     var simulation = d3.forceSimulation()
         .nodes(nodeData)
 
@@ -450,7 +573,7 @@ $(document).ready(function() {
     // Hide FSA Colors
     function fsaColorState() {
         if (!$("#chkNodeColor").is(":checked")) {
-            nodes.attr("fill", applyFSAColor);
+            nodes.attr("fill", "black");
         } else {
             nodes.attr("fill", greyHexCode);
         }
@@ -488,7 +611,7 @@ $(document).ready(function() {
                 return scaleLinkWidths(d.value); 
             });
         } else {
-            links.attr("stroke-width", 2);
+            links.attr("stroke-width", 5);
         }
     }
 
@@ -548,7 +671,10 @@ $(document).ready(function() {
     function renderExplodedGraph(networkJson, colorScale){
 
       // Get "Exploded" data
+    	//console.log('renderExplodedGraph', networkJson);
       var fsaNetwork = filterFSAGroups(networkJson);
+    	
+    	//var fsaNetwork = networkJson.nodes;
       
       // Split for renderGraph params
       var fsaNodes = fsaNetwork.nodes;
@@ -558,13 +684,17 @@ $(document).ready(function() {
       //console.log("fsaLinks", fsaLinks)
       
       // Draw FSA Groups only
+      //console.log('renderExplodedGraph', networkJson);
       renderGraph(fsaNodes, fsaLinks, colorScale);
     }
     
     function filterFSAGroups(networkJson) {
         // Deep copy of networkJson to avoid mutation
-    	//console.log('networkJson1', networkJson);
+    	//console.log('filterFSAGroups1', networkJson);
         var fsaNetworkJson = JSON.parse(JSON.stringify(networkJson));
+        
+        //console.log('fsaNetworkJson', fsaNetworkJson);
+        //console.log('filterFSAGroups2', fsaNetworkJson);
         
         // Filter FSA Nodes
         var fsaNodes = fsaNetworkJson.nodes.filter(function(val) {
@@ -577,7 +707,7 @@ $(document).ready(function() {
         fsaNodes.forEach(function(val) {
             fsaNodeNameList.push(val.name);
         });
-        
+//        console.log("fsaNodeNameList", fsaNodeNameList);
         // Mutate JSON: key on names, rather than indices
         //console.log('fsaNetworkJson', fsaNetworkJson);
         //console.log('networkJson2', networkJson);

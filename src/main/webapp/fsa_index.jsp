@@ -218,6 +218,7 @@
           <a id="CSVExport" download="NetworkFSA.csv">Download FSA Analysis CSV</a>
           
           <%-- Explode FSA Groups --%>
+          
           <form id="networkViewForm">
             <h2>Network View</h2>
             <div>
@@ -228,6 +229,10 @@
             </div>
           </form>
           
+        </div>
+        
+        <div class = "formBox" id = "groups_fsa">
+        	
         </div>
         
         <!--Upload CSV to server  -->
@@ -252,6 +257,13 @@
       </div><!-- menu -->
 
     </div><!-- container -->
+    <div>
+    <form action="" name="customform" id="customform" method="post">
+		<input type="hidden" name="status_error" id="fsa_computation" value=1 />
+		<input type="hidden" name="filter_type" id="filter_name" value="" />
+		<%-- <input type="hidden" name="network_data" id="network_weighted_json" value=<%=(null == session.getAttribute("original_weighted_network_")) ? "" : session.getAttribute("email")%> /> --%>
+	</form>
+    </div>
 
     <%-- Legal notice --%>
     <div id="footer">
@@ -264,7 +276,13 @@
       <script src="js/upload_csv.js" charset="utf-8"></script>
     </c:if> --%>
     <script type="text/javascript">
-
-</script>
+    	function allSelected() 
+        {
+            
+            
+        }
+    
+    	
+	</script>
   </body>
 </html>

@@ -563,6 +563,56 @@ public class NetworkGraph{
 
             return jsonObject;
         }
+        
+        public JSONObject ToJSONObject2(Hashtable<String,Integer> fStructures) throws Exception{
+            Hashtable<String,Integer> nodesTable = new Hashtable<String,Integer>();
+            JSONObject jsonObject = new JSONObject();
+            double edgeWeight = 1.0;
+            String msg= this.nGraph.getResponseMessage(); // ASP
+
+            JSONArray nodesArray = new JSONArray();
+            for(int i=0; i < this.nGraph.getNodeCount(); i++){
+                JSONObject nodesArrayJsonObject = new JSONObject();
+                String nodeId = this.nGraph.getNodes().get(i).getNodeId();
+                nodesArrayJsonObject.put("name", this.nGraph.getNodes().get(i).getNodeLabel());
+//                nodesArrayJsonObject.put("group", fStructures.get(nodeId));
+                nodesTable.put(nodeId, i );
+                nodesArray.put(nodesArrayJsonObject);
+            }
+            jsonObject.put("nodes", nodesArray);
+
+            JSONArray linksArray = new JSONArray();
+            for(int i=0; i < this.nGraph.getEdgeCount(); i++){
+                Integer sourceNodeId = nodesTable.get(this.nGraph.getEdges().get(i).getSourceNode().getNodeId());
+                Integer targetSourceId = nodesTable.get(this.nGraph.getEdges().get(i).getTargetNode().getNodeId());
+                
+                String original_source_id = this.nGraph.getEdges().get(i).getSourceNode().getNodeId();
+                String original_target_id = this.nGraph.getEdges().get(i).getTargetNode().getNodeId();
+
+                //get the edge weight
+                edgeWeight = this.nGraph.getEdges().get(i).getEdgeWeight();
+
+                JSONObject linksArrayJsonObject = new JSONObject();
+                linksArrayJsonObject.put("source", sourceNodeId);
+                linksArrayJsonObject.put("target", targetSourceId);
+                linksArrayJsonObject.put("value", edgeWeight);
+                linksArrayJsonObject.put("group", fStructures.get(original_source_id + "___" + original_target_id));
+                linksArray.put(linksArrayJsonObject);
+            }
+            jsonObject.put("links", linksArray);
+            
+            // ASP ------
+            JSONArray graphInfoArray = new JSONArray();
+            JSONObject graphInfoJSONObject = new JSONObject();
+            graphInfoJSONObject.put("numNodes", this.nGraph.getNodeCount());
+            graphInfoJSONObject.put("numEdges", this.nGraph.getEdgeCount());
+            graphInfoJSONObject.put("responseMessage", msg);
+            graphInfoArray.put(graphInfoJSONObject);
+            jsonObject.put("graphInfo",graphInfoArray);
+            // ASP ------
+
+            return jsonObject;
+        }
 
         public JSONObject ToJSONObject() throws Exception{//Use this when only loading a graph
             Hashtable<String,Integer> nodesTable = new Hashtable<String,Integer>();

@@ -1,8 +1,14 @@
 package edu.ualr.fsa;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -11,12 +17,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.annotation.Resource;
-
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import myclasses.NetworkGraph;
 import myclasses.NetworkLoader;
@@ -86,6 +93,12 @@ public class LoadFSAServlet extends HttpServlet {
             // Attach JSON representation of network as HTTP Response payload
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
+            
+            if(networkJSONObjectOutput.length() > 0) {
+            	HttpSession session = request.getSession();
+            	session.setAttribute("original_weighted_network_" + networkIdString, networkJSONObjectOutput);
+            }
+            
             response.getWriter().write(networkJSONObjectOutput.toString());
             System.out.println("here");
 
