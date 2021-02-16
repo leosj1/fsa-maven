@@ -16,6 +16,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%
 String networkIdString = request.getParameter("networkId");
+String action = request.getParameter("action");
 String groups = request.getParameter("groups");  
 
 Object session_object = (null == session.getAttribute("original_fsa_groups_" + networkIdString)) ? "" : session.getAttribute("original_fsa_groups_" + networkIdString);
@@ -44,7 +45,13 @@ if(groups == ""){
 			  
 			</form>
 
-<%}else {
+<%}if (action.equals("session")){
+	Object session_network_object = (null == session.getAttribute("original_fsa_network_" + networkIdString)) ? "" : session.getAttribute("original_fsa_network_" + networkIdString);
+	if(session_network_object != ""){%>
+		<%="True"%>
+	<%}%>
+	
+<%}if (action.equals("render")) {
 	Object session_network_object = (null == session.getAttribute("original_fsa_network_" + networkIdString)) ? "" : session.getAttribute("original_fsa_network_" + networkIdString);
 	JSONObject filtered_network_json = new JSONObject();
 	JSONArray fltered_links = new JSONArray();

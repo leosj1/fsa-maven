@@ -219,15 +219,15 @@
           
           <%-- Explode FSA Groups --%>
           
-          <form id="networkViewForm">
+          <!-- <form id="networkViewForm">
             <h2>Network View</h2>
             <div>
               <input type="radio" id="networkViewAll" name="networkView" class="network_click"  value="all" >
               <label for="networkViewAll">All Nodes</label>
               <input type="radio" id="networkViewFSAOnly" class="network_click" name="networkView" value="fsaOnly" checked>
               <label for="networkViewFSAOnly">FSA Groups Only</label>
-            </div>
-          </form>
+            </div> -->
+          </form> 
           
         </div>
         

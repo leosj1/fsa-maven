@@ -38,7 +38,9 @@ $(document).ready(function() {
     "#ffa26e"]);
 
   // Load Default Network
-  loadNetworkAjax("load/fsa/unweighted");
+  //loadNetworkAjax("load/fsa/unweighted");
+  //loadNetworkAjax("load/fsa/2.0");
+  render_network("session");
 
   // Custom error message to throw if FSA groups are changed from
   // increment-b-5 to increment-by-1 server-side
@@ -59,13 +61,17 @@ $(document).ready(function() {
   // TODO Apply FSA properly (weighted/unweighted) the first time
 
   $("#networkList").change(function() {
-      loadNetworkAjax("load/fsa/unweighted");
+      //loadNetworkAjax("load/fsa/unweighted");
 	  //loadNetworkAjax("load/fsa/2.0");
+	  $("#fsa_computation").val(1);
+	  render_network("session");
   });
   
   $(".network_click").click(function() {
-      loadNetworkAjax("load/fsa/unweighted");
+      //loadNetworkAjax("load/fsa/unweighted");
       //loadNetworkAjax("load/fsa/2.0");
+	  //check_status_before_render()
+	  render_network("session")
   });
 
   $("#applyFSAUnweighted").click(function() {
@@ -82,43 +88,136 @@ $(document).ready(function() {
 	  update_status_bar()
   });
   
+//  $("#CSVExport").click(function() {
+//      loadNetworkAjax("load/fsa/2.0");
+//  });
+ 
+  //Filter FSA by Groups
   $("#groups_fsa").click(function() {
 	  var groups_string = "";
 	  $("input:checkbox").each(function() {
 	      if ($(this).is(":checked")) {
-	    	  //console.log("checked----", $(this).attr("id"));
 	    	  groups_string+= $(this).attr("id") + ",";
 	      }else{
 	      	//console.log($(this).attr("id"));
 	      } 
 	  });
-	  //console.log("groups_string--", groups_string);
 	  $("#groups_fsa").val(groups_string);
 	  
 	  if(groups_string != ""){
-		  render_groups2("render");
+		  render_network("render");
 	  }
 	  
   });
   
-  function render_groups(action){
+//Network Text Export
+function download_fsa_csv(response, url){
+	var nodeArr = response.nodes
+	  var linkArr = response.links
+	  var lines = [];
+	  
+	  if(url != "load/fsa/2.0"){
+	  	nodeArr.forEach(function(val, idx) {
+	          if (val.group != 0) {
+	              lines.push([val.name, val.group]);
+	          }
+	      });
+	  	// In-Place Sort by FSA Group.
+	      // Lowest Non-Zero Group First.
+	      lines.sort(function(a, b) {
+	          return a[1] - b[1];
+	      })
+	   // Hardcoded CSV Header
+	      var csvHeader = 'Node' + ',' + 'FSA Group' + '\n';
+	      $("#CSVExport").attr("download", "Network_FSA" + $("#networkList").val() + ".csv");
+	  }else{
+		  console.log("download_fsa_csv", response);
+	  	linkArr.forEach(function(val, idx) {
+	          if (val.group != 0) {
+	        	  if(val.source.hasOwnProperty('name')){
+	        		  lines.push([val.source.name, val.target.name, val.group]);
+	        	  }else{
+	        		  lines.push([nodeArr[val.source].name, nodeArr[val.target].name, val.group]);
+	        	  }           
+	          }
+	      });
+	  	// In-Place Sort by FSA Group.
+	      // Lowest Non-Zero Group First.
+	      lines.sort(function(a, b) {
+	          return a[2] - b[2];
+	      })
+	   // Hardcoded CSV Header
+	      var csvHeader = 'Source' + ',' + 'Target' + ',' + 'Group'+ '\n';
+	      $("#CSVExport").attr("download", "FSA_2_Network" + $("#networkList").val() + ".csv");
+	  }
+	  
+	  var csvContent = lines.join('\n');  // CSV string
+	  var csvFileStr = csvHeader + csvContent;
+	  
+
+	  // Download Link
+	  link = $("#CSVExport");
+	  link.attr(
+	      'href', 'data:text/csv); charset=utf-8,' +
+	      encodeURIComponent(csvFileStr)
+	  );
+}
+	
+  function render_network(action){
+	  var groups = $("#groups_fsa").val();
+	  if(action == "" || action == "session"){
+		  groups = action;
+	  }
+	  console.log("action", action, "groups", groups);
   	$.ajax({
           type: "GET",
           url: "subpages/index_servlet.jsp",
           data: {
             "networkId": $("#networkList").val(),
-            "groups":$("#groups_fsa").val()
-          },  
+            "groups":groups,
+            "action": action
+          }, 
           error: function(response) {
-          	alert("error")
-          	//console.log(response)
+          	alert("error");
           },
 
           success: function(response) {
-        	  if(action != "render"){
+        	  if(action == ""){
         		  $("#groups_fsa").html(response);
-        	  }else{
-        		  console.log("successsssss", response)
+        	  }
+        	  if(action == "session"){
+        		  if(String(response).trim() == "True"){
+        			  console.log("session available")
+        			  loadNetworkAjax("load/fsa/2.0");
+        		  }else{
+        			  console.log("no session available")
+        			  loadNetworkAjax("load/fsa/2.0");
+        			  update_status_bar();
+        		  }
+        	  }
+        	  if(action == "render"){
+        		  response = JSON.parse(response);
+        		  //console.log("response", response);
+        		  drawForceDirectedGraph(response, visDiv, colorScale, $("#filter_name").val());
+        		// Info Table
+                  var tbl = $("table#graphInfo");
+                  tbl.empty() // Prevent repeating rows
+
+                  var graphInfo = response.graphInfo[0];
+                  //console.log("graphInfo", graphInfo);
+                  var keys = Object.keys(graphInfo);
+                  // console.log(graphInfo, keys);  // Debug
+                  $.each(graphInfo, function(key, val) {
+                      // Only show responseMessage if has value
+                      if (val != "") {
+                          tbl.append(
+                              $('<tr>').append(
+                                  $('<th>').text(key),
+                                  $('<td>').text(val)
+                              )
+                          )
+                      }
+                  });     
         	  }
           	
           }
@@ -126,51 +225,17 @@ $(document).ready(function() {
         });
   }
   
-  function render_groups2(action){
-	  	$.ajax({
-	          type: "GET",
-	          url: "subpages/index_servlet.jsp",
-	          data: {
-	            "networkId": $("#networkList").val(),
-	            "groups":$("#groups_fsa").val()
-	          },         
-	          dataType:"json",
-	          error: function(response) {
-	          	alert("error")
-	          	//console.log(response)
-	          },
-
-	          success: function(response) {
-	        	  if(action != "render"){
-	        		  $("#groups_fsa").html(response);
-	        	  }else{
-	        		  drawForceDirectedGraph(response, visDiv, colorScale, $("#filter_name").val());
-	        		// Info Table
-	                  var tbl = $("table#graphInfo");
-	                  tbl.empty() // Prevent repeating rows
-
-	                  var graphInfo = response.graphInfo[0];
-	                  console.log("graphInfo", graphInfo);
-	                  var keys = Object.keys(graphInfo);
-	                  // console.log(graphInfo, keys);  // Debug
-	                  $.each(graphInfo, function(key, val) {
-	                      // Only show responseMessage if has value
-	                      if (val != "") {
-	                          tbl.append(
-	                              $('<tr>').append(
-	                                  $('<th>').text(key),
-	                                  $('<td>').text(val)
-	                              )
-	                          )
-	                      }
-	                  });     
-	        	  }
-	          	
-	          }
-
-	        });
-	  }
-  
+//  function check_status_before_render(){
+//		session = render_network("session");
+//		console.log("session--", session);
+//		if(session == "True"){
+//			alert('session')
+//			//render_network("render");
+//		}else{
+////			loadNetworkAjax("load/fsa/2.0");
+////			update_status_bar()
+//		}
+//	}
   
   /*
    * Function to update status bar
@@ -277,7 +342,7 @@ $(document).ready(function() {
                 tbl.empty() // Prevent repeating rows
 
                 var graphInfo = response.graphInfo[0];
-                console.log("graphInfo", graphInfo);
+                //console.log("graphInfo", graphInfo);
                 var keys = Object.keys(graphInfo);
                 // console.log(graphInfo, keys);  // Debug
                 $.each(graphInfo, function(key, val) {
@@ -291,43 +356,14 @@ $(document).ready(function() {
                         )
                     }
                 });
-
-                // Network Text Export
-                var nodeArr = response.nodes
-                var lines = [];
-                nodeArr.forEach(function(val, idx) {
-                    if (val.group != 0) {
-                        lines.push([val.name, val.group]);
-                    }
-                });
-
-                // In-Place Sort by FSA Group.
-                // Lowest Non-Zero Group First.
-                lines.sort(function(a, b) {
-                    // console.log(a, b);  // Debug
-                    return a[1] - b[1];
-                })
-
-                var csvContent = lines.join('\n');  // CSV string
-
-                // Hardcoded CSV Header
-                var csvHeader = 'Node' + ',' + 'FSA Group' + '\n';
-                var csvFileStr = csvHeader + csvContent;
-                // console.log(csvFileStr);  // Debug
-
-                // Download Link
-                link = $("#CSVExport");
-                link.attr(
-                    'href', 'data:text/csv); charset=utf-8,' +
-                    encodeURIComponent(csvFileStr)
-                );
+                //console.log("download_fsa_csv", response);
+                download_fsa_csv(response, url);
               },
-
               complete: function() {
                   // Re-enable buttons once request returns
                   $(".FSAButtons").prop("disabled", false);
                   $("#loadingBar").hide();
-                  render_groups("");
+                  render_network("");
               }
 
             });
