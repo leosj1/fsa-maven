@@ -123,25 +123,33 @@ public class LoadFSA_2 extends HttpServlet {
             			"}";
             	
             	JSONObject js = new JSONObject(str);
-            	//JSONObject networkJSONObjectOutput = new JSONObject();
+//            	JSONObject networkJSONObjectOutput = new JSONObject();
             	String fsa_result = _getResult(url, js).toString();
             	
-            	Hashtable<String,Integer> fStructures = new Hashtable<>();
-            	String fsa_result_cleaned = fsa_result.substring(1, fsa_result.length()-1).replace("\"","").trim();   
-            	String[] keyValuePairs = fsa_result_cleaned.split(","); 
-            	//System.out.println(fsa_result);
-            	for(String pair : keyValuePairs)                        
-            	{
-            	    String[] entry = pair.split(":");
-            	    int group = Integer.parseInt(entry[1].trim());
-            	    fStructures.put(entry[0].trim(), group);   
-            	    
-            	    fsa_groups.add(group);
-            	}
+            	
+//            	Hashtable<String,Integer> fStructures = new Hashtable<>();
+//            	String fsa_result_cleaned = fsa_result.substring(1, fsa_result.length()-1).replace("\"","").trim();   
+//            	String[] keyValuePairs = fsa_result_cleaned.split(","); 
+//            	//System.out.println(fsa_result);
+//            	for(String pair : keyValuePairs)                        
+//            	{
+//            	    String[] entry = pair.split(":");
+//            	    int group = Integer.parseInt(entry[1].trim());
+//            	    fStructures.put(entry[0].trim(), group);   
+//            	    
+//            	    fsa_groups.add(group);
+//            	}
             	
                 // Create JSON
                 //networkJSONOutput = networkGraph.ToJSONString(fStructures.fStructuresIndexTable); // Fatih
-                networkJSONObjectOutput = networkGraph.ToJSONObject2(fStructures);
+                //networkJSONObjectOutput = networkGraph.ToJSONObject2(fStructures);
+            	networkJSONObjectOutput = new JSONObject(fsa_result);
+            	JSONArray nodes = new JSONArray(networkJSONObjectOutput.get("nodes").toString());
+            	for(int i = 0; i < nodes.length(); i++) {
+            		JSONObject data = new JSONObject(nodes.get(i).toString());
+            		String group = data.get("group").toString();
+            		fsa_groups.add(Integer.parseInt(group));
+            	}
                 
                 // Attach JSON representation of network as HTTP Response payload
                 response.setContentType("application/json");

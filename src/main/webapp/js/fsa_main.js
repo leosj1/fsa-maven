@@ -119,7 +119,7 @@ function download_fsa_csv(response, url){
 	  if(url != "load/fsa/2.0"){
 	  	nodeArr.forEach(function(val, idx) {
 	          if (val.group != 0) {
-	              lines.push([val.name, val.group]);
+	              lines.push([val.name.split('_____')[0], val.group]);
 	          }
 	      });
 	  	// In-Place Sort by FSA Group.
@@ -135,9 +135,9 @@ function download_fsa_csv(response, url){
 	  	linkArr.forEach(function(val, idx) {
 	          if (val.group != 0) {
 	        	  if(val.source.hasOwnProperty('name')){
-	        		  lines.push([val.source.name, val.target.name, val.group]);
+	        		  lines.push([val.source.name.split('_____')[0], val.target.name.split('_____')[0], val.group]);
 	        	  }else{
-	        		  lines.push([nodeArr[val.source].name, nodeArr[val.target].name, val.group]);
+	        		  lines.push([nodeArr[val.source].name.split('_____')[0], nodeArr[val.target].name.split('_____')[0], val.group]);
 	        	  }           
 	          }
 	      });
@@ -253,7 +253,7 @@ function download_fsa_csv(response, url){
           console.log("status_code", status_code);
         if (width >= 100 || status_code == "0") {
         	if(status_code == "0"){
-        		alert('An error occurred while running the FSA v2.0 computaion. Please check the API log or if the API server is down');
+        		alert('An error occurred while running the FSA v2.0 computaion. Maybe load a more connected Graph or rather check the API logs or check if the API server is down');
         	}
       	    console.log("100", width)
             clearInterval(id);
@@ -321,7 +321,7 @@ function download_fsa_csv(response, url){
 
               error: function(response) {
                 //console.log(response);
-                alert("Error Loading FSA, Please login");
+                alert("Error Loading FSA");
                 $("#fsa_computation").val(0);
               },
 
@@ -335,6 +335,7 @@ function download_fsa_csv(response, url){
 
                 // alert("Ajax success");  // Debug
                 // $("div#d3vis").empty();
+            	  console.log(response);
                 drawForceDirectedGraph(response, visDiv, colorScale, $("#filter_name").val());
 
                 // Info Table
@@ -441,7 +442,8 @@ function download_fsa_csv(response, url){
       .enter()  // TODO function() for exploded focal structures use .update()
         .append("line")
         .attr("stroke-width", 5)
-        .style("stroke", applyFSAColor);
+//        .style("stroke", applyFSAColor);
+        .style("stroke", greyHexCode);
 
     // Drag Nodes
     var drag = d3.drag()
@@ -472,13 +474,81 @@ function download_fsa_csv(response, url){
         .data(nodeData)
       .enter()
         .append("circle")
-        
-        .on("mouseover", function(d) { return d.name })
         .attr("r", 10)
-        //.attr("fill", applyFSAColor)
-        .attr("fill", "black")
+        .attr("fill", applyFSAColor)
+        //.attr("fill", "black")
         
-        .text(function(d) { return d.name })
+        .text(function(d) { return d.name.split('_____')[0] })
+        .on('mouseover', function(d){
+        	//
+        	var filtered = nodeData.filter(function(l){
+        		if(d.name.split('_____')[0] === l.name.split('_____')[0]){
+        			return l;
+        		}
+        	})
+        	
+//	        d3.select(this).style({opacity:'0.8'})
+//	        d3.select("text").style({opacity:'1.0'});
+//        	d3.select(this)
+//        	.attr("r", 20);
+//        	.transition()
+//        	.duration(300)
+//        	.style("opacity", 1);
+        	
+//	        d3.select("text")
+//	        .attr("x",d.x)
+//	        .attr("y",d.y)
+//	        .attr("font-weight",1000)
+//	        .style("visibility", "visible")
+//	        .text(d.name.split('_____')[0] + " Group " + d.group );
+        	
+        	var circle_array = [];
+        	filtered.forEach(function(fd){
+        		d3.selectAll("circle")._groups[0].forEach(function(t){
+        			if (d3.select(t).data()[0].name == fd.name){
+        				circle_array.push(t);
+    		        }
+        		})
+        	});
+        	
+        	var text_array = [];
+        	filtered.forEach(function(fd){
+        		d3.selectAll("text")._groups[0].forEach(function(t){
+        			if (d3.select(t).data()[0].name == fd.name){
+        				text_array.push(t);
+    		        }
+        		})
+        	});
+        	
+        	//console.log("text_array", text_array);
+        	var x = d3.selectAll(circle_array)
+            .attr("r", 20);
+//        	.style("cursor","pointer")
+            
+            d3.selectAll(text_array)
+//            .attr("x",function(d) { return d.x })
+//	        .attr("y",function(d) { return d.y })
+	        .attr("font-weight",1000)
+	        .style("visibility", "visible")
+	        .text(function(d) {return d.name.split('_____')[0] + " Group " + d.group} );
+//	        .style("cursor","pointer");
+
+	     })
+	    .on('mouseout', function(d){
+	    	d3.selectAll("circle")
+            .attr("r", 10);
+//            .style("cursor","default");
+	    	
+	    	d3.selectAll("text")
+            .style("visibility", "hidden");
+//            .style("cursor","default");
+	    	
+//	    	d3.select("text")
+//	        .attr("x",d.x)
+//	        .attr("y",d.y)
+//	        .attr("font-weight",1000)
+//	        .style("visibility", "hidden")
+	    })
         .call(drag);
 
     var nodeLabels = gNetworkBase.append("g")
@@ -490,8 +560,8 @@ function download_fsa_csv(response, url){
         .attr("dx", -5) // Slight offset to be in center
         .attr("dy", 5)  // FIXME Make this appear better
         .attr("visibility", "hidden")
-        .text(function(d) { return d.name })
-        .on("mouseover", function(d) { return d.name })
+        .text(function(d) { return d.name.split('_____')[0] })
+        //.on("mouseover", function(d) {console.log("labell") })
         // FIXME node labels scaled by zoom?
         .call(drag);
 
@@ -609,7 +679,8 @@ function download_fsa_csv(response, url){
     // Hide FSA Colors
     function fsaColorState() {
         if (!$("#chkNodeColor").is(":checked")) {
-            nodes.attr("fill", "black");
+//            nodes.attr("fill", "black");
+            nodes.attr("fill", applyFSAColor);
         } else {
             nodes.attr("fill", greyHexCode);
         }
